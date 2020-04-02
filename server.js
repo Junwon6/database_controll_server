@@ -168,10 +168,17 @@ app.post('/testCheck', (req, res) => {
 })
 
 app.post('/getProblem', (req, res) => {
+    var subject_dict = req.body.subject_dict;
 
+    var subject = Object.keys(subject_dict).filter(key => subject_dict[key]);
+    var where_condition = '';
+    if (subject.length !== 0) {
+        where_condition = ` WHERE t.subject IN (${subject.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
+    }
     var sql = `SELECT`
         + `     t.problem, t.content, t.problem_no`
         + ` FROM problem AS t`
+        + where_condition
         + ` ORDER BY RAND()`
         + ` LIMIT 1;`
 
