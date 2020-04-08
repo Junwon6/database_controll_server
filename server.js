@@ -169,11 +169,23 @@ app.post('/testCheck', (req, res) => {
 
 app.post('/getProblem', (req, res) => {
     var subject_dict = req.body.subject_dict;
+    var problem_grade_dict = req.body.problem_grade_dict;
 
     var subject = Object.keys(subject_dict).filter(key => subject_dict[key]);
+    var problem_grade = Object.keys(problem_grade_dict).filter(key => problem_grade_dict[key]);
+
     var where_condition = '';
     if (subject.length !== 0) {
         where_condition = ` WHERE t.subject IN (${subject.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
+    }
+
+    if (problem_grade.length !== 0) {
+        if (where_condition.length === 0) {
+            where_condition = ` WHERE t.grade IN (${problem_grade.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
+        }
+        else {
+            where_condition += ` AND t.grade IN (${problem_grade.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
+        }
     }
     var sql = `SELECT`
         + `     t.problem, t.content, t.problem_no`
