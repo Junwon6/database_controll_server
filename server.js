@@ -175,9 +175,16 @@ app.post('/getProblem', (req, res) => {
     var problem_grade = Object.keys(problem_grade_dict).filter(key => problem_grade_dict[key]);
 
     var where_condition = '';
-    if (subject.length !== 0) {
-        where_condition = ` WHERE t.subject IN (${subject.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
+
+    if (subject.length === 0) {
+        subject = Object.keys(subject_dict)
     }
+
+    // if (subject.length !== 0) {
+    //     where_condition = ` WHERE t.subject IN (${subject.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
+    // }
+
+    where_condition = ` WHERE t.subject IN (${subject.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
 
     if (problem_grade.length !== 0) {
         if (where_condition.length === 0) {
