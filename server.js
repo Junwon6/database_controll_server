@@ -180,10 +180,6 @@ app.post('/getProblem', (req, res) => {
         subject = Object.keys(subject_dict)
     }
 
-    // if (subject.length !== 0) {
-    //     where_condition = ` WHERE t.subject IN (${subject.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
-    // }
-
     where_condition = ` WHERE t.subject IN (${subject.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
 
     if (problem_grade.length !== 0) {
@@ -213,6 +209,37 @@ app.post('/getProblem', (req, res) => {
         }
     })
 })
+
+app.post('/getProblemList', (req, res) => {
+    var subject_dict = req.body.subject_dict;
+    var subject = Object.keys(subject_dict).filter(key => subject_dict[key]);
+ 
+    var where_condition = '';
+
+    if (subject.length === 0) {
+        subject = Object.keys(subject_dict)
+    }
+    console.log(subject)
+    where_condition = ` WHERE t.subject IN (${subject.reduce((full_str, s) => (full_str + `, '${s}'`), '').slice(2)})`;
+
+    var sql = `SELECT`
+        + `     t.problem, t.problem_no`
+        + ` FROM problem AS t`
+        + where_condition
+
+    conn.query(sql, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.send({ success: false });
+            throw err;
+        }
+        else {
+            console.log('[success] get problem list');
+            res.send({ success: true, data: result });
+        }
+    })
+})
+
 
 app.post('/study/save', (req, res) => {
     var sql = `INSERT INTO problem (problem, content, answer, subject, grade, answer_order) `
